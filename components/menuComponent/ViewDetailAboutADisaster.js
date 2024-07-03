@@ -1,0 +1,176 @@
+import React,{useState,useEffect} from 'react';
+import { View, Text, StyleSheet, Image,TouchableOpacity,ActivityIndicator  } from 'react-native';
+import axios from 'axios';
+import NetInfo from '@react-native-community/netinfo';
+
+export default  function  ViewDetailedAboutADisasters  ({ route,navigation}){
+const {disaster,distance}=route.params;
+const [isOnline, setIsOnline] = useState(true);
+useEffect(() => {
+  const unsubscribe = NetInfo.addEventListener(state => {
+    setIsOnline(state.isConnected);
+  });
+
+  // Check the initial network state
+  NetInfo.fetch().then(state => {
+    setIsOnline(state.isConnected);
+  });
+
+  return () => {
+    unsubscribe();
+  };
+}, [isOnline]);
+
+const reloadScreen = () => {
+  setReload(prevState => !prevState);
+
+};
+const [addressName,setAddresName]=useState(null)
+const [isLoading, setIsLoading] = useState(true);
+const [err, setErr]=useState(false)
+const [reload ,setReload]=useState(false)
+const getHumanReadableAddress = async (latitude, longitude) => {
+    setErr(false)
+    setIsLoading(true)
+  try {
+    const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+    // console.log('Address:', response.data.display_name);
+    setAddresName(response.data.display_name);
+    setIsLoading(false)
+  } catch (error) {
+    // console.error('Error fetching address:', error);
+    setErr(true)
+    setIsLoading(false)
+  }
+};
+React.useEffect(()=>{
+    getHumanReadableAddress(disaster.coordinates.latitude,disaster.coordinates.longitude)
+},[reload])
+
+
+
+if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Decoding  Address of disaster area...</Text>
+      </View>
+    );
+  }
+
+  if (!isOnline) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        
+        <Text style={{fontSize:18,marginBottom:10}}>you are currently offline</Text>
+        <TouchableOpacity style={{marginTop:10,width:90,height:35,borderRadius:10,
+          backgroundColor:"lightgray",justifyContent:"center"}}
+          onPress={()=>{  setReload(prevState => !prevState);}}
+          >
+          <Text style={{fontSize:15,fontWeight:"bold",textTransform:"uppercase",textAlign:"center"}}>Roload </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+
+  if (err) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{textAlign:"center"}}>Network error occur  fail to get address of the  disaster area</Text>
+        <TouchableOpacity style={{marginTop:10,width:90,height:35,borderRadius:10,
+          backgroundColor:"lightgray",justifyContent:"center"}}
+          onPress={()=>{  setReload(prevState => !prevState);}}
+          >
+          <Text style={{fontSize:15,fontWeight:"bold",textTransform:"uppercase",textAlign:"center"}}>Roload </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+
+    return(
+<View >
+<View style={styles.card}>
+<View style={styles.item}>
+    <View>
+          <Text style={{fontSize:18,fontWeight:"bold",marginBottom:5}}>{disaster.type}</Text>
+          <Text style={[styles.itemText,{fontSize:12,fontWeight:"500",color:"gray"}]}>{disaster. description}</Text>
+        </View>
+        </View>
+        <View style={styles.item}>
+            
+            <View  style={{width:"50%"}}>
+               <Text  style={{fontSize:16,fontWeight:"bold",marginBottom:5,marginLeft:10}}>Disaster Area</Text>
+            <Text style={[styles.itemText,{fontSize:12,fontWeight:"500",color:"gray"}]}>{addressName}</Text>
+            </View>
+         <View style={{marginRight:10}}> 
+         <Text style={[styles.itemText,{fontSize:16,fontWeight:"bold",textAlign:"center",marginBottom:3}]}>{distance} Km </Text>
+         <Text style={[styles.itemText,{fontSize:12,fontWeight:"500",color:"gray"}]}>Away from you </Text>
+         </View>
+      
+        </View>
+      
+        <View style={styles.item}>
+         <View style={{width:"45%"}}>
+<TouchableOpacity  style={[styles.Button,{backgroundColor:"#007BFF"}]}>
+    <Text style={[styles.ButtonText,{color:"white"}]}>escape Route</Text>
+</TouchableOpacity>
+         </View>
+        
+         <View style={{width:"55%",borderLeftWidth:2,borderLeftColor:"lightgray",alignItems:"flex-end"}}>
+         <TouchableOpacity style={[styles.Button,{backgroundColor:"red",width:"90%",marginRight:10}]}>
+    <Text  style={[styles.ButtonText,{color:"white",fontSize:13,paddingHorizontal:3}]}>visit disaster area </Text>
+</TouchableOpacity>
+         </View>
+        </View>
+      
+      </View>
+
+      <View style={{flexDirection:"row",justifyContent:"center",alignContent:"center",marginTop:20}}>
+
+        <Text>Map display from here </Text>
+      </View>
+    </View>
+  );
+};
+   
+
+const styles = StyleSheet.create({
+    card: {
+        backgroundColor: 'lightgray',
+        borderRadius: 10,
+        marginHorizontal: 20,
+        marginTop: 50,
+        paddingLeft: 15,
+        elevation: 3, // for android
+        shadowColor: '#000', // for ios
+        shadowOffset: { width: 0, height: 2 }, // for ios
+        shadowOpacity: 0.2, // for ios
+        shadowRadius: 2, // for ios
+      },
+      item: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+      },
+      itemText: {
+        fontSize: 13,
+        color: '#333',
+      },
+  Button:{
+width:"80%",
+height:40,
+borderRadius:10,
+justifyContent:"center"
+  },
+  ButtonText:{
+    fontWeight:"bold",
+    fontSize:14,
+    textAlign:"center",
+    textTransform:"uppercase",
+  }
+  });
