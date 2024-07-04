@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Text, ScrollView } from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import axios from 'axios';
+import DisasterCard from '../menuComponent/viewDetailAboutADisaster_card';
 
 // Set the public access token
 MapboxGL.setAccessToken('pk.eyJ1IjoianVuaW9yNzAiLCJhIjoiY2x5NnB2MmE4MDBiZjJsczh6N3VkMDhzYyJ9.BkLbKUfqkl2xOO45DTgAhQ');
 
-const MyApp1 = () => {
+const MyMap = ({addressName,disaster,distance}) => {
   const [route, setRoute] = useState(null);
 
 //   useEffect(() => {
-//     // fetchRoute();
+//     fetchRoute();
 //   }, []);
 
 function handleTrace(){
@@ -36,6 +37,7 @@ function handleTrace(){
   const startLocation = [9.3590, 4.0786]; // Replace with your start coordinates
 
   return (
+    
     <View style={styles.container}>
       <MapboxGL.MapView style={styles.map} styleURL={MapboxGL.StyleURL.Street}>
         <MapboxGL.Camera
@@ -45,18 +47,15 @@ function handleTrace(){
           heading={20}
         />
         
-        {/* Custom image marker for start location */}
-        
+        {/* Marker for start location */}
         <MapboxGL.PointAnnotation
           id="startLocation"
           coordinate={startLocation}
         >
-
-          <Image
-            source={require('./images/icons/loca.png')} // Replace with your custom image path
-            style={styles.customMarker}
-          />
-          <MapboxGL.Callout title="Start Location" />
+          <View style={styles.annotationContainer}>
+            <View style={styles.annotationFill} />
+          </View>
+          <MapboxGL.Callout title="Your Location" />
         </MapboxGL.PointAnnotation>
 
         {route && (
@@ -84,34 +83,44 @@ function handleTrace(){
           />
         </MapboxGL.VectorSource>
       </MapboxGL.MapView>
-      <TouchableOpacity  style={styles.buttonContainer}
-      onPress={()=>{handleTrace()}}
-      >
-        <Text>Street</Text>
-      </TouchableOpacity>
+     <DisasterCard addressName={addressName}  disaster={disaster}   distance={distance}  handleTrace={ handleTrace}  />
     </View>
+   
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+//   flex:1
+width:"100%",
+height:"100%"
+   
   },
   map: {
     flex: 1,
   },
   customMarker: {
-    width: 30,
+    width: 40,
     height: 30,
     // resizeMode: 'contain', // Adjust as needed
   },
-  buttonContainer: {
-    alignSelf:"center",
-    backgroundColor:"red",
-    marginVertical: 40,
-    marginHorizontal: 20,
+  annotationContainer: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderRadius: 15,
   },
+  annotationFill: {
+    width: 25,
+    height: 25,
+    borderRadius: 13,
+    backgroundColor: '#00f', // Blue color
+    transform: [{ scale: 0.6 }],
+  },
+
 });
 
 
-export default MyApp1;
+export default MyMap;
