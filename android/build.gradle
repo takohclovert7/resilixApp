@@ -7,19 +7,28 @@ buildscript {
         targetSdkVersion = 34
         ndkVersion = "27.0.11718014"
         kotlinVersion = "1.9.22"
+        // mapbox = "10.1.0"
     }
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://api.mapbox.com/downloads/v2/releases/maven' }
        
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.1.0")  // Specify a compatible version
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("com.mapbox.mapboxsdk:mapbox-android-plugin-places-v9:0.12.0")
        
     }
 }
-
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://api.mapbox.com/downloads/v2/releases/maven' }
+    }
+}
 apply plugin: "com.facebook.react.rootproject"
 

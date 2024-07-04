@@ -12,6 +12,8 @@ import NetworkStatus from "./testme";
 import NetInfo from '@react-native-community/netinfo';
 import OtpVerification from './components/authComponent/otpScreen';
 import { initializeNotifee } from './PushNotificationConfig';
+import MyApp1 from './test';
+import MyMap from './components/map/mapView';
 
 
     const Stack = createStackNavigator();
