@@ -181,7 +181,9 @@ const ViewRecentDisasters = ({location,navigation}) => {
             {disaster:disaster,
               addressName:addressName,
               distance:(getDistance(disaster.coordinates,
-                { latitude: location.coords.latitude, longitude: location.coords.longitude })/1000)
+                { latitude: location.coords.latitude, longitude: location.coords.longitude })/1000),
+                latitude: location.coords.latitude, 
+                longitude: location.coords.longitude
             })}>
             <Text style={styles.readMoreText}>Read More</Text>
           </TouchableOpacity>

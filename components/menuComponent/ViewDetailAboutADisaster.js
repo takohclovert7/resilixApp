@@ -6,7 +6,7 @@ import MyMap from '../map/mapView';
 // import DisasterCard from './viewDetailAboutADisaster_card';
 
 export default  function  ViewDetailedAboutADisasters  ({ route,navigation}){
-const {disaster,distance}=route.params;
+const {disaster,distance,latitude,longitude}=route.params;
 const [isOnline, setIsOnline] = useState(true);
 useEffect(() => {
   const unsubscribe = NetInfo.addEventListener(state => {
@@ -92,7 +92,8 @@ if (isLoading) {
 
 
     return(
-<MyMap  addressName={addressName}  disaster={disaster}   distance={distance}  />
+<MyMap  addressName={addressName}  disaster={disaster}   distance={distance} 
+latitude={latitude}  longitude={longitude} />
   );
 };
 

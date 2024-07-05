@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Text, ScrollView } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import axios from 'axios';
-import DisasterCard from '../menuComponent/viewDetailAboutADisaster_card';
+import LandSlideStatisticsBottom from './landSlideStatisticsBottom';
 
-// Set the public access token
-MapboxGL.setAccessToken('pk.eyJ1IjoianVuaW9yNzAiLCJhIjoiY2x5NnB2MmE4MDBiZjJsczh6N3VkMDhzYyJ9.BkLbKUfqkl2xOO45DTgAhQ');
+MapboxGL.setAccessToken('your-mapbox-access-token');
 
-const MyMap = ({addressName,disaster,distance,latitude,longitude}) => {
+const LandSlideStatistics = ({ location }) => {
   const [route, setRoute] = useState(null);
+  const [addressName, setAddressName] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [reload, setReload] = useState(false);
   const [zoomLevelSet,setZomeLevelSet]=useState(15)
 
   const zoomIn = () => {
@@ -22,49 +25,76 @@ const MyMap = ({addressName,disaster,distance,latitude,longitude}) => {
         setZomeLevelSet(zoomLevelSet-1);
     }
   };
-  useEffect(() => {
-    // fetchRoute();
-    // console.log(latitude,longitude)
-  }, []);
 
-function handleTrace(){
-    fetchRoute()
-}
+  const getHumanReadableAddress = async (latitude, longitude) => {
+    setError(false);
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+      );
+      setAddressName(response.data.display_name);
+      setIsLoading(false);
+    } catch (error) {
+      setError(true);
+      setIsLoading(false);
+    }
+  };
 
   const fetchRoute = async () => {
-    const start = [longitude, latitude]; // Replace with start coordinates
-    const end = [9.2632, 4.1560];   // Replace with end coordinates
-    const accessToken = 'pk.eyJ1IjoianVuaW9yNzAiLCJhIjoiY2x5NnB2MmE4MDBiZjJsczh6N3VkMDhzYyJ9.BkLbKUfqkl2xOO45DTgAhQ';
+    const start = [location.coords.longitude, location.coords.latitude];
+    const end = [9.2632, 4.1560]; // Example end coordinates
+    const accessToken = 'your-mapbox-access-token';
 
     try {
       const response = await axios.get(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${start.join(',')};${end.join(',')}?geometries=geojson&access_token=${accessToken}`
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${start.join(',')};${end.join(
+          ','
+        )}?geometries=geojson&access_token=${accessToken}`
       );
       const routeData = response.data.routes[0].geometry;
       setRoute(routeData);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching route:', error);
     }
   };
 
-  const startLocation = [longitude, latitude]; // Replace with your start coordinates
+  useEffect(() => {
+    if (location !== 0) {
+      getHumanReadableAddress(location.coords.latitude, location.coords.longitude);
+    }
+  }, [location, reload]);
+
+  const startLocation = [location.coords.longitude, location.coords.latitude];
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text>Failed to fetch address. Network error occurred.</Text>
+        <TouchableOpacity
+          style={styles.reloadButton}
+          onPress={() => setReload(prevState => !prevState)}>
+          <Text>Reload</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
-    
     <View style={styles.container}>
       <MapboxGL.MapView style={styles.map} styleURL={MapboxGL.StyleURL.Street}>
-        <MapboxGL.Camera
-          zoomLevel={zoomLevelSet}
-          centerCoordinate={startLocation} // Center map on start location
-          pitch={60}
-          heading={20}
-        />
-        
-        {/* Marker for start location */}
-        <MapboxGL.PointAnnotation
-          id="startLocation"
-          coordinate={startLocation}
-        >
+        <MapboxGL.Camera zoomLevel={zoomLevelSet} centerCoordinate={startLocation} pitch={60} heading={20} />
+
+        <MapboxGL.PointAnnotation id="startLocation" coordinate={startLocation}>
           <View style={styles.annotationContainer}>
             <View style={styles.annotationFill} />
           </View>
@@ -73,15 +103,10 @@ function handleTrace(){
 
         {route && (
           <MapboxGL.ShapeSource id="routeSource" shape={route}>
-            <MapboxGL.LineLayer
-              id="routeLayer"
-              style={{
-                lineColor: 'red', // Blue color
-                lineWidth: 10,
-              }}
-            />
+            <MapboxGL.LineLayer id="routeLayer" style={{ lineColor: 'red', lineWidth: 10 }} />
           </MapboxGL.ShapeSource>
         )}
+
         <MapboxGL.VectorSource id="composite" url="mapbox://mapbox.mapbox-terrain-v2">
           <MapboxGL.FillExtrusionLayer
             id="building-3d"
@@ -115,27 +140,17 @@ function handleTrace(){
 
         </TouchableOpacity>
       </View>
-
-     <DisasterCard addressName={addressName}  disaster={disaster}   distance={distance}  handleTrace={ handleTrace}  />
+      <LandSlideStatisticsBottom location={location} addressName={addressName} />
     </View>
-   
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-//   flex:1
-width:"100%",
-height:"100%"
-   
+    flex: 1,
   },
   map: {
     flex: 1,
-  },
-  customMarker: {
-    width: 40,
-    height: 30,
-    // resizeMode: 'contain', // Adjust as needed
   },
   annotationContainer: {
     width: 30,
@@ -149,8 +164,26 @@ height:"100%"
     width: 25,
     height: 25,
     borderRadius: 13,
-    backgroundColor: '#00f', // Blue color
+    backgroundColor: '#00f',
     transform: [{ scale: 0.6 }],
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reloadButton: {
+    marginTop: 10,
+    width: 90,
+    height: 35,
+    borderRadius: 10,
+    backgroundColor: 'lightgray',
+    justifyContent: 'center',
   },
   zoomButton: {
  
@@ -174,8 +207,6 @@ height:"100%"
    tintColor:"rgba(0, 113, 206,0.9)"
 
   }
-
 });
 
-
-export default MyMap;
+export default LandSlideStatistics;

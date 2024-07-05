@@ -19,11 +19,11 @@ const LandComponent = ({ handlePressLand}) => {
                                 />
 
   </View>
-  <View  style={styles.Right}>
+  <View  style={[styles.Right]}>
   <Image
-    source={require("../../images/icons/flood.png")}
+    source={require("../../images/icons/landslide.png")}
         
-            style={{ width: 170, height: 110, top:3,right:10,marginBottom:20}}
+            style={{ width: 200, height: 90,right:10,marginBottom:30,marginTop:20,resizeMode:"contain"}}
                                 />
 
 <Text style={{fontSize:17,fontWeight:"bold",color:"#444E72",textAlign:"center"}}>READ </Text>

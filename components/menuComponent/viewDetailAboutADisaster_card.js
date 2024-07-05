@@ -3,7 +3,9 @@ import { View, Text, StyleSheet, Image,TouchableOpacity,ActivityIndicator, Scrol
 
 
 export default function DisasterCard ({addressName,disaster,distance,handleTrace}){
-
+useEffect(()=>{
+    console.log(disaster)
+})
     return(
         <View style={styles.card}>
 
@@ -54,7 +56,8 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 }, // for ios
         shadowOpacity: 0.2, // for ios
         shadowRadius: 2, // for ios
-        marginBottom:101
+        marginBottom:91,
+       
       
       },
       item: {

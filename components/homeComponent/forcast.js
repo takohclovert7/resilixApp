@@ -30,9 +30,9 @@ const ForcastScreen =({handlePressFlood, handlePressLand})=>{
          <LandComponent   handlePressLand={ handlePressLand}/>
 
         </View>
-        <View style={[styles.slide, { width: screenWidth }]}>
+        {/* <View style={[styles.slide, { width: screenWidth }]}>
             <Text style={styles.title}>Item 3</Text>
-        </View>
+        </View> */}
     </ScrollView>
     )
 }

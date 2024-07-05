@@ -92,7 +92,9 @@ export function PredictFloodBottom({handleFloodPerdayRoute,location}){
               finalTemp:day.weather[6].temperature,
               humidity:day.weather[3].humidity,
               description:day.weather[3].description,
-              date:day.date
+              date:day.date,
+              icon:day.weather[3].iconCode,
+            
               
                  }
                 handleFloodPerdayRoute(data)

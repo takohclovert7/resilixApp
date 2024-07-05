@@ -1,7 +1,13 @@
 import React, { useState,useEffect } from 'react';
 import { Modal,View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
 
-
+// Configure Google Sign-In
+GoogleSignin.configure({
+  webClientId: "AIzaSyBtw5ev2wEDhnYcvsBiJDDubYKFqaxnwUI", // Client ID of type WEB for your server (needed to verify user ID and offline access)
+  offlineAccess: false, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+});
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -10,6 +16,38 @@ const SignUpScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   
+ 
+  const signInWithGoogle = async () => {
+    try {
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+      // Get the user's ID token
+      const { idToken } = await GoogleSignin.signIn();
+
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      // Sign-in the user with the credential
+      await auth().signInWithCredential(googleCredential);
+
+      console.log('User signed in with Google');
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+        console.log('User cancelled the login flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (e.g. sign in) is in progress already
+        console.log('Sign in is in progress');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+        console.log('Play services not available or outdated');
+      } else {
+        // some other error happened
+        console.log('Some other error happened:', error);
+      }
+    }
+  };
 
 
   return (
@@ -65,7 +103,10 @@ const SignUpScreen = ({ navigation }) => {
           </TouchableOpacity>
           <Text style={styles.orText}>or continue with</Text>
           <TouchableOpacity style={styles.googleButton}
-           onPress={()=>{ navigation.navigate('Screen4');}}
+           onPress={()=>{ 
+            // signInWithGoogle()
+            navigation.navigate('Screen4')
+            }}
           >
             <Image
               source={require("../../images/icons/google.png")}

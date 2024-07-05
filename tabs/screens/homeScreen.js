@@ -6,8 +6,9 @@ import HomeThreeScreen from '../../components/homeComponent/homeThreeScreen';
 import HomeSecondScreen from '../../components/homeComponent/homeSecondScreen';
 import HomeFirstScreen from '../../components/homeComponent/homeFirstScreen';
 import PredictFloodStatistic from '../../components/predictionComponent/predictFloodStart';
-import JB from '../../components/predictionComponent/predictMap';
 import FloodForcastPerDay from '../../components/predictionComponent/floodForcastePerDay';
+import LandSlideMainComp from '../../components/floodComponent/landslideMain';
+
 
 
 
@@ -92,7 +93,7 @@ const HomeScreen = () => {
 
 <Stack.Screen
                     name="Screen6"
-                    component={JB}
+                    component={LandSlideMainComp}
                     options={({ navigation }) => ({
                         headerStyle: {
                             backgroundColor: 'transparent',

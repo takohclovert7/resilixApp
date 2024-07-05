@@ -22,7 +22,7 @@ const FloodForcastPerDay = ({route}) => {
     <ScrollView  contentContainerStyle={styles.container}  style={{marginBottom:90}}>
     <View style={[styles.header,{marginTop:40}]}>
       <Image
-        source={require("../../images/icons/zag.png")} // Replace with your image URL
+        source={{ uri: `http://openweathermap.org/img/wn/${TodayForecast.icon}@2x.png` }}// Replace with your image URL
         style={styles.image}
       />
     </View>

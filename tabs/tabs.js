@@ -247,7 +247,7 @@ const Tabs = ({ navigation}) => {
           name="sideMenu"
           component={SidebarScreen}
           listeners={{
-            tabPress: e => {
+            focus: e => {
               handleTabPress('sideMenu');
             },
           }}
