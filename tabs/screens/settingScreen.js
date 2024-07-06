@@ -1,97 +1,76 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import SettingScreenStart from '../../components/settingScreenComp/settingScreenStart';
+import AboutReslixScreen from '../../components/settingScreenComp/aboutResilixScreen';
+
+
+
+const Stack = createStackNavigator();
+
+const CustomBackButton = ({ navigation }) => (
+    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Image
+            source={require('../../images/icons/Arrow.jpg')}
+            style={styles.backButtonImage}
+        />
+    </TouchableOpacity>
+);
 
 const SettingScreen = () => {
-  return (
-    <ScrollView style={styles.container}  >
-      <Text style={styles.headerText}>Apps</Text>
-      <View style={styles.card}>
-        <TouchableOpacity style={styles.item}>
-          <Text style={styles.itemText}>ResilixPro</Text>
-          <Image style={styles.itemIcon} source={require('../../images/icons/greater.png')} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.item}>
-          <Text style={styles.itemText}>About the app</Text>
-          <Image style={styles.itemIcon} source={require('../../images/icons/greater.png')} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.item}>
-          <Text style={styles.itemText}>Share</Text>
-          <Image style={styles.itemIcon} source={require('../../images/icons/greater.png')} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.item}>
-          <Text style={styles.itemText}>Join with us</Text>
-          <Image style={styles.itemIcon} source={require('../../images/icons/greater.png')} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.item}>
-          <Text style={styles.itemText}>Mobile data limit</Text>
-          <Image style={styles.itemIcon} source={require('../../images/icons/greater.png')} />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.card}>
-        <TouchableOpacity style={styles.item}>
-          <Text style={styles.itemText}>Review</Text>
-          <Image style={styles.itemIcon} source={require('../../images/icons/greater.png')} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.item}>
-          <Text style={styles.itemText}>Feedback</Text>
-          <Image style={styles.itemIcon} source={require('../../images/icons/greater.png')} />
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.footerText}>Tell us about the experience with the app</Text>
-    </ScrollView>
-  );
-};
+    
+    return (
+        <NavigationContainer independent={true}>
+            <Stack.Navigator>
+                <Stack.Screen
+                    name="Screen1"
+                    component={SettingScreenStart}
+                    options={({ navigation }) => ({
+                        headerStyle: {
+                            backgroundColor: 'transparent',
+                            elevation: 0,
+                            shadowOpacity: 0,
+                        },
+                        headerTransparent: true,
+                        headerTitle: '', // Hides the header title
+                        headerShown: false,
+                    
+        
+                    })}
+/>
+<Stack.Screen
+                    name="Screen2"
+                    component={AboutReslixScreen}
+                    options={({ navigation }) => ({
+                        headerStyle: {
+                            backgroundColor: 'transparent',
+                            elevation: 0,
+                            shadowOpacity: 0,
+                        },
+                        headerTransparent: true,
+                        headerTitle: '', // Hides the header title
+                        headerLeft: () => <CustomBackButton navigation={navigation} />,
+                    })}
+                />
+  
+
+
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#D9D9D9',
-  
-  },
-  headerText: {
-    fontSize: 15,
-    marginHorizontal: 50,
-    marginTop: 10,
-    marginBottom: 5,
-    fontWeight: 'bold',
-  },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    marginHorizontal: 20,
-    marginTop: 10,
-    paddingLeft: 15,
-    elevation: 3, // for android
-    shadowColor: '#000', // for ios
-    shadowOffset: { width: 0, height: 2 }, // for ios
-    shadowOpacity: 0.2, // for ios
-    shadowRadius: 2, // for ios
-  },
-  item: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  itemText: {
-    fontSize: 13,
-    color: '#333',
-  },
-  itemIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 15,
-    tintColor: "black",
-  },
-  footerText: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 12,
-    color: '#aaa',
-    marginBottom: 20,
-  },
+    backButton: {
+        marginLeft: 15,
+    },
+    backButtonImage: {
+      width:40,
+      height:30,
+      tintColor:"#0071CE"
+    },
 });
+
 
 export default SettingScreen;

@@ -1,5 +1,5 @@
 import React, { useState ,useEffect} from 'react';
-import { Modal,View, Image, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Keyboard } from 'react-native';
+import { Alert,View, Image, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Keyboard } from 'react-native';
 import CheckBox from 'react-native-check-box'
 
 
@@ -16,6 +16,16 @@ const LoginScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
+  const loginWithGoogleButtonPress = () => {
+    Alert.alert(
+        'Google Login comming',
+        'Please use the normal login method',
+        [
+            { text: 'OK' }
+        ],
+        { cancelable: false }
+    );
+};
 
 
 
@@ -79,7 +89,7 @@ const LoginScreen = ({ navigation }) => {
           </TouchableOpacity>
           <Text style={styles.orText}>or continue with</Text>
           <TouchableOpacity style={styles.googleButton}
-           onPress={()=>{ navigation.navigate('Screen4');}}
+           onPress={()=>{ loginWithGoogleButtonPress();}}
           >
             <Image
               source={require("../../images/icons/google.png")}

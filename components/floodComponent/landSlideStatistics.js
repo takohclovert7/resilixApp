@@ -5,14 +5,19 @@ import axios from 'axios';
 import LandSlideStatisticsBottom from './landSlideStatisticsBottom';
 
 MapboxGL.setAccessToken('your-mapbox-access-token');
-
+const landslideAffect=[
+  {
+    id:1,
+    coordinate:[9.2665,4.0922]
+  }
+]
 const LandSlideStatistics = ({ location }) => {
   const [route, setRoute] = useState(null);
   const [addressName, setAddressName] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [reload, setReload] = useState(false);
-  const [zoomLevelSet,setZomeLevelSet]=useState(15)
+  const [zoomLevelSet,setZomeLevelSet]=useState(11)
 
   const zoomIn = () => {
     if (zoomLevelSet < 20) {
@@ -88,6 +93,8 @@ const LandSlideStatistics = ({ location }) => {
       </View>
     );
   }
+  
+
 
   return (
     <View style={styles.container}>
@@ -100,6 +107,19 @@ const LandSlideStatistics = ({ location }) => {
           </View>
           <MapboxGL.Callout title="Your Location" />
         </MapboxGL.PointAnnotation>
+        {landslideAffect.map((area,index)=>{
+          return(
+        <MapboxGL.PointAnnotation id={`${area.id}`} coordinate={[9.2665,4.0922]} key={index}
+        
+           
+        >
+        <View style={styles.annotationContainer}>
+          <View style={[styles.annotationFill,{backgroundColor:"red"}]} />
+        </View>
+        <MapboxGL.Callout title="Land Slide Arrea" />
+      </MapboxGL.PointAnnotation>
+          )
+        })}
 
         {route && (
           <MapboxGL.ShapeSource id="routeSource" shape={route}>
