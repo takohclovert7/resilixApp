@@ -6,14 +6,11 @@ import Tabs from './tabs/tabs';
 import SignUpScreen from './components/authComponent/signup';
 import LoginScreen from './components/authComponent/login';
 import ForgetScreen from './components/authComponent/forget';
-import MyComponent from './test';
 import SplashScreen from './components/splash';
-import NetworkStatus from "./testme";
 import NetInfo from '@react-native-community/netinfo';
 import OtpVerification from './components/authComponent/otpScreen';
 import { initializeNotifee } from './PushNotificationConfig';
-import MyApp1 from './test';
-import MyMap from './components/map/mapView';
+
 
 
     const Stack = createStackNavigator();
@@ -159,16 +156,6 @@ return(
 </NavigationContainer>
 
 
-// {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//   <Text>Network is online. Your content goelf vkldfv kldsvk ds here.</Text>
-//   <Text>Network is online. Your content goelf vkldfv kldsvk ds here.</Text>
-//   <Text>Network is online. Your content goelf vkldfv kldsvk ds here.</Text>
-//   <Text>Network is online. Your content goelf vkldfv kldsvk ds here. {isOnline?"true":"false"}</Text>
-
-//   <NonDismissibleAlert visible={!isOnline} message="This is a non-dismissible alert!" />
-
-// </View> */}
-
 
 
 )
@@ -189,8 +176,3 @@ const styles = StyleSheet.create({
 
 
 
-
-
-
-
-// sk.eyJ1IjoianVuaW9yNzAiLCJhIjoiY2x4cTN1ODc5MG42bzJxcHV6dmo4Z25zMiJ9.3JtsOrFCBDVBq9ciaDxg3A
