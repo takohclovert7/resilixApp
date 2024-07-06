@@ -86,7 +86,7 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
+             storeFile file("$rootDir/app/debug.keystore")
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
@@ -109,6 +109,8 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+     implementation "com.google.android.gms:play-services-auth:$googlePlayServicesAuthVersion"
+
        implementation('com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.2') {
         exclude group: 'com.mapbox.common', module: 'common'
         exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-android-core'
