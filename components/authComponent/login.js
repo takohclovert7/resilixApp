@@ -2,6 +2,8 @@ import React, { useState ,useEffect} from 'react';
 import {ActivityIndicator, Alert,View, Image, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Keyboard } from 'react-native';
 import CheckBox from 'react-native-check-box'
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const LoginScreen = ({route, navigation }) => {
   const {fcmToken}= route.params;
   const [email, setEmail] = useState('');
@@ -27,7 +29,7 @@ const [isLogging,setIsLoggin]=useState(false)
 
 async function sendPostRequest() {
   setIsLoggin(true)
-  const url = 'https://resilix.onrender.com/login/';
+  const url = 'https://resilixapi.onrender.com/login/';
   const data = {
     username:email ,
      password:password
@@ -41,10 +43,27 @@ async function sendPostRequest() {
       });
 
       console.log('Success:', response.data);
+// local storage
+try {
+  const jsonValue = JSON.stringify(response.data);
+  await AsyncStorage.setItem('@user', jsonValue);
+  console.log('Data successfully saved');
+} catch (e) {
+  console.log('Failed to save the data to the storage');
+}
+// 
       navigation.navigate('Screen4',{user:response.data});
       setIsLoggin(false)
   } catch (error) {
     setIsLoggin(false)
+    Alert.alert(
+      'Login Fail',
+      'Please try to login agian',
+      [
+          { text: 'OK' }
+      ],
+      { cancelable: false }
+  );
       if (error.response) {
           console.log('Status code:', error.response.status);
           console.log('Headers:', error.response.headers);

@@ -44,7 +44,7 @@ async function handleSignupWithnuber(){
   else{
     setIsCreatingaccount(true)
     try {
-      const response = await axios.post('https://resilix.onrender.com/user/signup/', {
+      const response = await axios.post('https://resilixapi.onrender.com/user/signup/', {
         username: name,
         password: password,
         phone_number: phone,

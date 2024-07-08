@@ -73,7 +73,7 @@ const OtpVerification = ({route, navigation }) => {
     setIsCreatingaccount(true)
     try {
       // console.log(typeof(phone))
-      const response = await axios.post('https://resilix.onrender.com/verify_phone/', {
+      const response = await axios.post('https://resilixapi.onrender.com/verify_phone/', {
       phone_number:"+237653603453",
        otp_code :otp.join("")
       });

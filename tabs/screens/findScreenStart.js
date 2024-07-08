@@ -3,13 +3,15 @@ import {ActivityIndicator, View,Keyboard,Text,Image, TextInput, TouchableOpacity
 import FineScreenHeader from './findScreenHeader';
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
-
+import Markdown from 'react-native-markdown-display';
 const  FineScreenStart = ({location,reloadScreen}) => {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [disableTextInput, setDisableTextInput]=useState(true)
   const [addressName,setAddresName]=useState(null)
 const [isLoading, setIsLoading] = useState(true);
 const [isOnline, setIsOnline] = useState(true);
+const [chatDataAi,setChatDataAi]=useState("")
+const [chatExist, setChatExist]=useState(false)
 useEffect(() => {
   const unsubscribe = NetInfo.addEventListener(state => {
     setIsOnline(state.isConnected);
@@ -25,6 +27,7 @@ useEffect(() => {
   };
 }, [isOnline]);
   React.useEffect(() => {
+  
     if(location===0){
 
     }else{
@@ -50,6 +53,7 @@ useEffect(() => {
           // console.log('Address:', response.data.display_name);
           setAddresName(response.data.display_name);
           setIsLoading(false)
+          // sendPostRequest()
         } catch (error) {
           setErr(true)
           setIsLoading(false)
@@ -64,33 +68,76 @@ useEffect(() => {
       const [err, setErr]=useState(false)
     const [chatData, setChatData] = useState([]);
   const [userText,setUserText]=useState("")
-    const setUserInput = (newInput) => {
-      setUserText("")
-      setDisableTextInput(false)
-        setChatData(prevData => [
-            ...prevData,
-            {
-                userInput: newInput,
-                aiResponse: "typing..." // Assuming you want to set "typing..." initially
-            }
-        ]);
-       
-        setTimeout(setAIResponse, 3000, "Resilix Ai response");
-    };
-    
-    const setAIResponse = (newResponse) => {
-        setChatData(prevData => {
-            // Make sure there are objects in the array
-            if (prevData.length === 0) return prevData;
-    
-            // Update the aiResponse of the most recent object
-            const updatedChatData = [...prevData];
-            updatedChatData[updatedChatData.length - 1].aiResponse = newResponse;
-            return updatedChatData;
+  const setUserInput = (newInput) => {
+    setUserText(""); // Assuming setUserText clears the user input
+    setDisableTextInput(false);
+
+    // Add user input with initial AI response of "typing..."
+    setChatData(prevData => [
+        ...prevData,
+        {
+            userInput: newInput,
+            aiResponse: "typing..."
+        }
+    ]);
+
+    // Send the POST request to the API
+    sendPostRequest(newInput)
+        .then(response => {
+            // Update AI response after successful API response
+            setTimeout(() => setAIResponse(response.data.response), 3000);
+        })
+        .catch(error => {
+            console.error('Error sending post request:', error);
+            // Handle error if necessary
         });
-        setDisableTextInput(true)
+};
+
+const setAIResponse = (newResponse) => {
+    setChatData(prevData => {
+        if (prevData.length === 0) return prevData;
+
+        const updatedChatData = [...prevData];
+        updatedChatData[updatedChatData.length - 1].aiResponse = newResponse;
+        return updatedChatData;
+    });
+    setDisableTextInput(true);
+};
+
+async function sendPostRequest(userInput) {
+    setChatExist(false);
+    const url = 'https://resilixapi.onrender.com/chatbot/';
+    const data = {
+        message: userInput
     };
-    
+
+    try {
+        const response = await axios.post(url, data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        console.log('Success:', response.data.response);
+        setChatExist(true);
+        return response; // Return the entire response object
+    } catch (error) {
+        if (error.response) {
+            console.log('Server error:', error.response.data);
+            console.log('Status code:', error.response.status);
+        } else if (error.request) {
+            console.log('Network error:', error.request);
+        } else {
+            console.log('Error:', error.message);
+        }
+        throw error; // Rethrow the error to handle it in setUserInput
+    }
+}
+
+
+
+
+
 
     if (isLoading ) {
         return (
@@ -147,10 +194,17 @@ useEffect(() => {
 return(
    <View key={chat_index}  style={{marginBottom:10}}>
          <View style={{paddingLeft:6,paddingRight:5,marginTop:7, backgroundColor:"rgba(0,113,206,0.05)",borderWidth:1,borderColor:"rgba(0,113,206,0.07)",marginRight:15,marginLeft:"20%"}}>
-             <Text style={{fontSize:13,color:"#444E72"}}>{chat.userInput}</Text>
+             <Text style={{fontSize:13,color:"#444E72"}}>{chat.userInput}
+              
+             </Text>
          </View>
          <View style={{paddingLeft:6,paddingRight:5,marginTop:7, backgroundColor:"rgba(0,113,206,0.21)",borderWidth:1,borderColor:"rgba(0,113,206,0.25)",marginLeft:15,marginRight:"20%"}}>
-             <Text style={{fontSize:13,color:"#444E72"}}>{chat.aiResponse} </Text>
+             {/* <Text style={{fontSize:13,color:"#444E72"}}> */}
+             <Markdown>
+             {chat.aiResponse}
+   </Markdown>
+              
+               {/* </Text> */}
          </View>
    </View>
 )

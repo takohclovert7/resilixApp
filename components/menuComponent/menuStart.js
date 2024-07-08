@@ -15,7 +15,7 @@ const MenuCompStart = ({navigation,username, number}) => {
         {getFirstTwoLetters(username)}
           </Text>
         <Text style={styles.name}>{username}</Text>
-        <Text style={styles.email}>{ number}</Text>
+        {/* <Text style={styles.email}>{ number}</Text> */}
       </View>
       <View style={styles.menu}>
 

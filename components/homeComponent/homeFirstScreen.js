@@ -52,7 +52,7 @@ function  handleFlood(){
  const getAlertChoices = async () => {
     setLoading(false)
  try {
-    const response = await axios.get('https://resilix.onrender.com/emergency/choices');
+    const response = await axios.get('https://resilixapi.onrender.com/emergency/choices');
     setData(response.data);
 setLoading(true)
  } catch (error) {

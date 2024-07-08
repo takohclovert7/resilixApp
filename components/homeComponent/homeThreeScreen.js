@@ -1,12 +1,16 @@
 import React ,{useEffect}from 'react';
-import { StyleSheet, Text, Keyboard, ScrollView, View, Image, TouchableOpacity, SafeAreaView, TextInput, StatusBar, TouchableWithoutFeedback, Alert } from 'react-native';
+import {ActivityIndicator, StyleSheet, Text, Keyboard, ScrollView, View, Image, TouchableOpacity, SafeAreaView, TextInput, StatusBar, TouchableWithoutFeedback, Alert } from 'react-native';
 import axios from 'axios';
+import Markdown from 'react-native-markdown-display';
 const HomeThreeScreen = ({route,navigation}) => {
-
+  const {addressName,boldText,emegencyDreciption} = route.params;
+const [chatData ,setChatData]=React.useState("")
+const [isloading,setIsloading]=React.useState(false)
   async function sendPostRequest() {
-    const url = 'https://resilix.onrender.com/chatbot/';
+    setIsloading(true)
+    const url = 'https://resilixapi.onrender.com/chatbot/';
     const data = {
-       message: "What should I do during a flood ?"
+       message: emegencyDreciption
     };
   
     try {
@@ -16,12 +20,13 @@ const HomeThreeScreen = ({route,navigation}) => {
             }
         });
   
-        console.log('Success:', response.data);
-  
+        // console.log('Success:', response.data.response);
+        setChatData(response.data)
+        setIsloading(false)
     } catch (error) {
+      setIsloading(false)
         if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
+       
             console.log('Server error:', error.response.data);
             console.log('Status code:', error.response.status);
             // console.log('Headers:', error.response.headers);
@@ -42,7 +47,7 @@ useEffect(()=>{
   sendPostRequest()
 },[])
 
-  const {addressName,boldText,emegencyDreciption} = route.params;
+ 
   return (
     <ScrollView style={{ backgroundColor: "#fff7ee", height: "100%", marginBottom:90}}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -63,15 +68,15 @@ useEffect(()=>{
                 <Text style={{ color: "#444E72" }}>{boldText}</Text>
               </Text>
             </View>
-            <View style={{ display: "flex", flexDirection: "row", width: "100%", marginLeft: 30 }}>
-              <View style={{ flexDirection:"row", backgroundColor: "rgba(0, 113, 206, 0.15)",  alignItems: "center", borderRadius: 10, marginTop: 10 }}>
+            <View style={{ display: "flex", flexDirection: "row", width: "100%", marginLeft: 10 }}>
+              <View style={{marginRight:20, flexDirection:"row", backgroundColor: "rgba(0, 113, 206, 0.15)",  alignItems: "center", borderRadius: 10, marginTop: 10 }}>
               <Image
                   source={require("../../images/icons/loca.png")}
                   resizeMode="contain"
                   style={{ width: 27, height: 28, tintColor: "rgba(0,113,206,1.0)", marginLeft: -2, marginRight: 5 }}
                 />
                
-                <Text style={{ color: "#444E72", padding:5}}>
+                <Text style={{ color: "#444E72", padding:5,}}>
                  {`${addressName}`}
                 </Text>
               </View>
@@ -88,18 +93,32 @@ useEffect(()=>{
           <Text style={{ marginLeft: 10, fontWeight: "bold", fontSize: 15, marginBottom: 9, color: "#444E72" }}>
             AI First Aid Assistance Response
           </Text>
-          <View style={{ width: "100%", display: "flex", alignItems: "flex-end" }}>
+          <View style={{ width: "100%", display: "flex",paddingLeft:10 }}>
             <View style={{
-              width: "75%",
-              height: 230,
-              backgroundColor: "rgba(0, 113, 206, 0.21)",
-              borderColor:"rgba(0, 113, 206, 0.15)",
-              borderWidth:2,
+              
+              // backgroundColor: "rgba(0, 113, 206, 0.21)",
+              // borderColor:"rgba(0, 113, 206, 0.15)",
+              // borderWidth:2,
               marginRight: 15
             }}>
-              <Text style={{ color: "#444E72" }}>response</Text>
-              <Text style={{ position: "relative", top: 190, fontWeight: "bold", marginLeft: 10, color: "#444E72" }}>Resilix AI Assistance</Text>
-            </View>
+              {isloading &&(
+  <View style={{  alignItems: 'center' }}>
+  <ActivityIndicator size="large" color="#0000ff" />
+  <Text>typing...</Text>
+</View>
+
+              )}
+             
+         {(chatData && !isloading) &&(
+     <Markdown>
+     {chatData.response}
+   </Markdown>
+
+         )} 
+         {!isloading &&(
+          <Text style={{ position: "relative", fontWeight: "bold", marginLeft: 10, color: "#444E72" }}>Resilix AI Assistance</Text>
+         )}
+         </View>
           </View>
         </View>
       </TouchableWithoutFeedback>

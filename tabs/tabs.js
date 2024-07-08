@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View,Text, Image, TouchableOpacity,TouchableWithoutFeedback , StyleSheet, Keyboard, Animated, Dimensions } from "react-native";
 import FineScreen from "./screens/findScreen";
@@ -68,8 +68,11 @@ const CustomHeader = ({ toggleSidebar }) => (
   </View>
 );
 
-const Tabs = ({ navigation}) => {
-  const username="junior"
+const Tabs = ({route, navigation}) => {
+  useEffect(()=>{
+    console.log({user:route.params.user.username})
+  })
+  const username=route.params.user.username
   const number="+2367994243"
   const [isFineScreen, setIsFineScreen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);

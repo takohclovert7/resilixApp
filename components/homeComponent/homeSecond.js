@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator,StyleSheet, ScrollView, Text, Keyboard, View, Image, TouchableOpacity, SafeAreaView, TextInput, StatusBar, TouchableWithoutFeedback, Alert } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 function HomeSecond({handleSendAlert,boldText,location,id}){
@@ -9,6 +10,7 @@ const [inputValue, setInputValue] = useState('');
 const [isLoading, setIsLoading] = useState(true);
 const [reload ,setReload]=useState(false)
 const [err, setErr]=useState(false)
+
   const getHumanReadableAddress = async (latitude, longitude) => {
     setErr(false)
     setIsLoading(true)
@@ -34,7 +36,7 @@ const [err, setErr]=useState(false)
     } else {
       // Handle the valid input
       sendPostRequest()
-      // handleSendAlert(addressName,inputValue)
+      handleSendAlert(addressName,inputValue)
      
     }
   };
@@ -53,26 +55,31 @@ const [err, setErr]=useState(false)
 
  
 async function sendPostRequest() {
-  const url = 'https://resilix.onrender.com/alerts/';
+  const jsonValue = await AsyncStorage.getItem('@user');
+  jsonValue != null ? JSON.parse(jsonValue) : null;
+
+  const url = 'https://resilixapi.onrender.com/alerts/';
   const data = {
-      user: "@Bossman123",
-      alert_type: "1",
+      alert_type: 1,
       user_location: {
-          longitude: 10.1234,
-          latitude: 20.5678
+          longitude:10.1234,
+          latitude:20.5678
       },
       description: 'There is a flood in my area.',
-      broadcast_to_all:false
+      broadcast_to_all:true
   };
 
   try {
+   
+console.log(jsonValue);
       const response = await axios.post(url, data, {
           headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+             
           }
       });
 
-      console.log('Success:', response.data);
+      console.log('Success kuykbub:', response.ok);
 
   } catch (error) {
       if (error.response) {
@@ -131,7 +138,7 @@ if (err) {
             Spot {boldText} somewhere? Report it to keep the community informed and safe
           </Text>
           <View style={{ display: "flex", flexDirection: "row", width: "90%", justifyContent: "space-between", marginLeft: 20 }}>
-            <View style={{ flexDirection: "row", width: 251, backgroundColor:  "rgba(0, 113, 206, 0.15)",  alignItems: "center", borderRadius: 10, marginTop: 20 }}>
+            <View style={{paddingRight:20, flexDirection: "row", width: 251, backgroundColor:  "rgba(0, 113, 206, 0.15)",  alignItems: "center", borderRadius: 10, marginTop: 20 }}>
               <Image
                 source={require("../../images/icons/loca.png")}
                 resizeMode="contain"
