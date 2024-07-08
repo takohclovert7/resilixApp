@@ -3,7 +3,7 @@ import { ActivityIndicator,StyleSheet, ScrollView, Text, Keyboard, View, Image, 
 import axios from 'axios';
 
 
-function HomeSecond({handleSendAlert,boldText,location}){
+function HomeSecond({handleSendAlert,boldText,location,id}){
 const [addressName,setAddresName]=useState(null)
 const [inputValue, setInputValue] = useState('');
 const [isLoading, setIsLoading] = useState(true);
@@ -33,10 +33,12 @@ const [err, setErr]=useState(false)
       Alert.alert('Input field Required', 'Provide a description of the emegency you are currently facing .');
     } else {
       // Handle the valid input
+      // sendPostRequest()
       handleSendAlert(addressName,inputValue)
      
     }
   };
+  
 
 
  useEffect(function(){
@@ -48,6 +50,52 @@ const [err, setErr]=useState(false)
   getHumanReadableAddress(location.coords.latitude, location.coords.longitude);
 }
  },[reload])
+
+ 
+async function sendPostRequest() {
+  const url = 'https://resilix.onrender.com/alerts/';
+  const data = {
+      user: 1,
+      alert_type: 1,
+      user_location: {
+          longitude: 10.1234,
+          latitude: 20.5678
+      },
+      description: 'There is a flood in my area.',
+      broadcast_to_all: true
+  };
+
+  try {
+      const response = await axios.post(url, data, {
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      });
+
+      console.log('Success:', response.data);
+
+  } catch (error) {
+      if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          // console.log('Server error:', error.response.text);
+          console.log('Status code:', error.response.status);
+          console.log('Headers:', error.response.headers);
+      } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser
+          // and an instance of http.ClientRequest in node.js
+          console.log('Network error:', error.request);
+      } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error:', error.message);
+      }
+  }
+}
+
+
+
+ 
 
  if (isLoading) {
   return (
@@ -82,10 +130,10 @@ if (err) {
       <View style={{ backgroundColor: "#D9D9D9", height: "100%" }}>
         <View style={{ marginTop: 10, alignItems: "center" }}>
           <Text style={{ fontWeight: "bold", fontSize: 20, color: "#444E72" }}>
-            {boldText}
+            {boldText} Emergency
           </Text>
           <Text style={{ width: "80%", marginTop: 20, marginLeft: 20, fontSize: 15, color: "#444E72" }}>
-            Spot   {boldText}? Report it to keep the community informed and safe
+            Spot {boldText} somewhere? Report it to keep the community informed and safe
           </Text>
           <View style={{ display: "flex", flexDirection: "row", width: "90%", justifyContent: "space-between", marginLeft: 20 }}>
             <View style={{ flexDirection: "row", width: 251, backgroundColor:  "rgba(0, 113, 206, 0.15)",  alignItems: "center", borderRadius: 10, marginTop: 20 }}>

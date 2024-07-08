@@ -10,8 +10,7 @@ import SplashScreen from './components/splash';
 import NetInfo from '@react-native-community/netinfo';
 import OtpVerification from './components/authComponent/otpScreen';
 import { initializeNotifee } from './PushNotificationConfig';
-
-
+import Chat from "./test"
 
     const Stack = createStackNavigator();
 
@@ -26,14 +25,14 @@ const CustomBackButton = ({ navigation }) => (
 );
 
  
-export default function App() {
+export default function App({fcmToken}) {
     const [isLoading, setIsLoading] =useState(true);
    
 
 
 
     useEffect( () => {
-        
+     
       setTimeout(() => {
         setIsLoading(false);
       }, 3000); // Duration for splash screen
@@ -66,6 +65,7 @@ return(
         <Stack.Screen
             name="Screen1"
             component={LoginScreen}
+            initialParams={{fcmToken:fcmToken}} // Pass initial parameters here
             options={({ navigation }) => ({
                 headerStyle: {
                     backgroundColor: 'transparent',
@@ -96,7 +96,7 @@ return(
                 headerTransparent: true,
                 headerTitle: '', // Hides the header title,
                 headerShown: false,
-             
+               
             })}
         />
 
@@ -156,6 +156,10 @@ return(
 </NavigationContainer>
 
 
+// <View style={styles.container}>
+// <Text style={styles.header}>Group Chat</Text>
+// <Chat groupId={"resilix-group-id"} currentUser={{ _id: '1', name: 'User1' }}/>
+// </View>
 
 
 )
@@ -171,6 +175,16 @@ const styles = StyleSheet.create({
       height:30,
       tintColor:"#0071CE"
     },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+      },
+      header: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 20,
+      },
 });
 
 

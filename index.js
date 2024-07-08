@@ -1,67 +1,49 @@
-// // index.js
+// index.js
 
+import React, { useEffect, useState } from 'react';
 import { AppRegistry } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 import App from './App';
 import { name as appName } from './app.json';
-// import BackgroundService from 'react-native-background-actions';
-// import { requestLocationPermission, getCurrentLocation } from './LocationService'; // Import location service functions
 
-// const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
+const FirebaseMessagingApp = () => {
+  const [fcmToken, setFcmToken] = useState('');
 
-// const veryIntensiveTask = async (taskDataArguments) => {
-//   const { delay } = taskDataArguments;
+  useEffect(() => {
+    const initializeFirebaseMessaging = async () => {
+      await messaging().registerDeviceForRemoteMessages();
+      
+      messaging().setBackgroundMessageHandler(async remoteMessage => {
+        console.log('Message handled in the background!', remoteMessage);
+      });
+  
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  
+      if (enabled) {
+        const token = await messaging().getToken();
+        if (token) {
+        //   console.log('FCM Token:', token);
+          setFcmToken(token); // Store the token in state
+        } else {
+          console.log('Failed to get FCM token.');
+        }
+  
+        messaging().onTokenRefresh(newToken => {
+        //   console.log('Refreshed FCM Token:', newToken);
+          setFcmToken(newToken); // Update the token in state on refresh
+        });
+      } else {
+        console.log('User denied messaging permissions.');
+      }
+    };
 
-//   await new Promise(async (resolve) => {
-//     for (let i = 0; BackgroundService.isRunning(); i++) {
-//       try {
-//         // Request location permission if not granted
-//         const granted = await requestLocationPermission();
-//         if (granted) {
-//           const position = await getCurrentLocation();
-//           console.log('[BackgroundService] Current position:', position);
-//           // Process position data here
-//         } else {
-//           console.error('[BackgroundService] Location permission denied');
-//         }
-//       } catch (error) {
-//         console.error('[BackgroundService] Error fetching position:', error);
-//         // Handle location errors
-//       }
+    initializeFirebaseMessaging();
+  }, []);
 
-//       await sleep(delay);
-//     }
-//     resolve();
-//   });
-// };
+  return <App fcmToken={fcmToken} />;
+};
 
-// const startBackgroundTask = async () => {
-//   const options = {
-//     taskName: 'ExampleTask',
-//     taskTitle: 'Example Task Title',
-//     taskDesc: 'Example Task Description',
-//     taskIcon: {
-//       name: 'ic_launcher',
-//       type: 'mipmap',
-//     },
-//     color: '#ff00ff',
-//     parameters: {
-//       delay: 6000, // Adjust delay as needed (in milliseconds)
-//     },
-//   };
-
-//   try {
-//     await BackgroundService.start(veryIntensiveTask, options);
-//     console.log('[BackgroundService] Task started successfully');
-//   } catch (error) {
-//     console.error('[BackgroundService] Failed to start task:', error);
-//   }
-// };
-
-// const MainApp = () => {
-//   // Start your background task when the component mounts
-//   startBackgroundTask();
-
-//   return <App />;
-// };
-
-AppRegistry.registerComponent(appName, () => App );
+AppRegistry.registerComponent(appName, () => FirebaseMessagingApp);

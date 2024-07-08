@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-const ChangeProfileInfo = () => {
-  const [name, setName] = useState('John Doe'); // Example name
+const ChangeProfileInfo = ({username,number}) => {
+  const [name, setName] = useState(username); // Example name
  
     const [currentPassword, setCurrentPassword] = React.useState('');
     const [newPassword, setNewPassword] = React.useState('');
     const [retypePassword, setRetypePassword] = React.useState('');
   
-  const [email, setEmail] = useState('johndoe@example.com'); // Example email
+  const [email, setEmail] = useState(number); // Example email
   const [edit,setEdit]=useState(false)
 
   const handleNameChange = (newName) => {
@@ -35,7 +35,7 @@ const ChangeProfileInfo = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Name:</Text>
+      <Text style={styles.label}>User Name:</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -50,14 +50,14 @@ const ChangeProfileInfo = () => {
         />
       </View>
 
-      <Text style={styles.label}>Email:</Text>
+      <Text style={styles.label}>Phone Number:</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           value={email}
           onChangeText={handleEmailChange}
-          placeholder="Enter your email"
-          keyboardType="email-address"
+          placeholder="change phone nuber"
+        keyboardType="phone-pad"
           editable={edit} // Disable editing
         />
         <Image
@@ -109,6 +109,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 10,
     paddingLeft: 40, // Ensure enough space for the icon
+    fontSize:20,
+    textTransform:"capitalize"
   },
   icon: {
     position: 'absolute',

@@ -11,17 +11,17 @@ import ViewFamilyMember from '../../components/menuComponent/viewFamilyMember';
 
 const SidebarScreen = ({route}) => {
    
-    const {screenName}=route.params;
+    const {screenName,username,number}=route.params;
 
   
     if(screenName==="viewRecentDisaster"){
         return <ViewRecentDisastersStack />
     }
     if(screenName==="profileInfo"){
-        return <ChangeProfileInfo  />
+        return <ChangeProfileInfo username={username} number={number} />
     }
     if(screenName==="communityChat"){
-        return <CommunityChat />
+        return <CommunityChat  username={username}/>
     }
     if(screenName==="addFamilyMember"){
         return <AddFamilyMember />

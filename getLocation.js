@@ -36,7 +36,7 @@ export const getLocation = async () => {
       error => {
         reject(error.message);
       },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 10000 }
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 20000 }
     ); 
   });
 };

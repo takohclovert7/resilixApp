@@ -28,6 +28,7 @@ useEffect(() => {
   };
 
   const boldText = route.params.boldT;
+  const id=route.params.index;
   const [isEnabled, setIsEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 const [locationDate ,setLocationDate]=useState(null)
@@ -146,7 +147,7 @@ else{
 
 
   return (<>
-<HomeSecond     handleSendAlert={handleSendAlert}   boldText={boldText }  location={locationDate}/>
+<HomeSecond     handleSendAlert={handleSendAlert}   boldText={boldText }  location={locationDate}  id={id}/>
    </>
   )
 }

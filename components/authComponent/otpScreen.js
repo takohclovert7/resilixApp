@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ScrollView } from 'react-native';
-
-const OtpVerification = ({ navigation }) => {
+import {ActivityIndicator, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ScrollView } from 'react-native';
+import axios from 'axios';
+const OtpVerification = ({route, navigation }) => {
+  const [isCreatingaccount,setIsCreatingaccount] = useState(false);
+  const {phone}=route.params;
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isValid, setIsValid] = useState([true, true, true, true, true, true]);
   const inputs = useRef([]);
@@ -61,12 +63,29 @@ const OtpVerification = ({ navigation }) => {
       Alert.alert('Error', 'Please enter valid numbers in all OTP fields.');
       return;
     }
-
+   
+       handleOtpRequest()
     // Implement OTP verification logic here
-    Alert.alert('Success', 'OTP verified successfully!');
-   navigation.navigate('Screen4');
+  //   Alert.alert('Success', 'OTP verified successfully!');
+  //  navigation.navigate('Screen4');
   };
-
+  const handleOtpRequest = async () => {
+    setIsCreatingaccount(true)
+    try {
+      console.log({phone,otp:otp.join("")})
+      const response = await axios.post('https://resilix.onrender.com/verify_phone/', {
+      phone_number : phone,
+       otp_code :otp.join("")
+      });
+      console.log('Response:', response.data);
+      setIsCreatingaccount(false)
+      // Handle success, update state, etc.
+    } catch (error) {
+      console.log('Error:', error.message);
+      // Handle error, show alert, etc.
+      setIsCreatingaccount(false)
+    }
+  };
   return (
     <ScrollView >
     <View style={styles.container}>
@@ -75,7 +94,7 @@ const OtpVerification = ({ navigation }) => {
         style={styles.image}
       />
       <Text style={styles.title}>OTP Verification</Text>
-      <Text style={styles.subtitle}>Enter OTP sent to +234 674 456 5903</Text>
+      <Text style={styles.subtitle}>Enter OTP sent to {phone}</Text>
       <View style={styles.otpContainer}>
         {otp.map((digit, index) => (
           <TextInput 
@@ -97,6 +116,12 @@ const OtpVerification = ({ navigation }) => {
           <Text style={styles.resendLink}>Resend OTP</Text>
         </TouchableOpacity>
       </View>
+      {isCreatingaccount && (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={{color:"red",fontSize:16,fontWeight:"bold"}}>Verifying OTP...</Text>
+      </View>
+          )}
       <TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>
         <Text style={styles.buttonText}>Verify OTP</Text>
       </TouchableOpacity>

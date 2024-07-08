@@ -1,17 +1,14 @@
 import React, { useState ,useEffect} from 'react';
-import { Alert,View, Image, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Keyboard } from 'react-native';
+import {ActivityIndicator, Alert,View, Image, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Keyboard } from 'react-native';
 import CheckBox from 'react-native-check-box'
-
-
-
-
-
-const LoginScreen = ({ navigation }) => {
+import axios from 'axios';
+const LoginScreen = ({route, navigation }) => {
+  const {fcmToken}= route.params;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
+const [isLogging,setIsLoggin]=useState(false)
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
@@ -28,6 +25,44 @@ const LoginScreen = ({ navigation }) => {
 };
 
 
+async function sendPostRequest() {
+  const url = 'https://resilix.onrender.com/login/';
+  const data = {
+    username:"Brandoski30" ,
+     password:"@Bossman123"
+  };
+
+  try {
+      const response = await axios.post(url, data, {
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      });
+
+      console.log('Success:', response.data);
+
+  } catch (error) {
+      if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          // console.log('Server error:', error.response.text);
+          console.log('Status code:', error.response.status);
+          console.log('Headers:', error.response.headers);
+      } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser
+          // and an instance of http.ClientRequest in node.js
+          console.log('Network error:', error.request);
+      } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error:', error.message);
+      }
+  }
+}
+
+useEffect(()=>{
+  sendPostRequest();
+})
 
 
   return (
@@ -45,6 +80,7 @@ const LoginScreen = ({ navigation }) => {
             style={styles.input}
             placeholder="example@gmail.com"
             value={email}
+            editable={!isLogging}
             onChangeText={setEmail}
             keyboardType="email-address"
           />
@@ -55,6 +91,7 @@ const LoginScreen = ({ navigation }) => {
               placeholder="Enter Your Password"
               value={password}
               onChangeText={setPassword}
+              editable={!isLogging}
               secureTextEntry={!passwordVisible}
             />
             <TouchableOpacity
@@ -82,13 +119,21 @@ const LoginScreen = ({ navigation }) => {
               <Text style={styles.forgotPassword}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
+          {isLogging && (
+          <View style={{ alignItems: 'center' ,marginBottom:15}}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={{color:"red",fontSize:16,fontWeight:"bold"}}>Logging you in...</Text>
+      </View>
+          )}
           <TouchableOpacity style={styles.loginButton}
+          disabled={isLogging}
           onPress={()=>{ navigation.navigate('Screen4');}}
           >
             <Text style={styles.loginButtonText}>Log In</Text>
           </TouchableOpacity>
           <Text style={styles.orText}>or continue with</Text>
           <TouchableOpacity style={styles.googleButton}
+           disabled={isLogging}
            onPress={()=>{ loginWithGoogleButtonPress();}}
           >
             <Image
@@ -102,7 +147,7 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.footerText}>
             Don’t have an account? </Text>
             <TouchableOpacity  
-            onPress={()=>{ navigation.navigate('Screen2');}}
+            onPress={()=>{ navigation.navigate('Screen2',{fcmToken:fcmToken});}}
             ><Text style={styles.signUpText}>Sign Up</Text></TouchableOpacity>
         </View>
         </View>

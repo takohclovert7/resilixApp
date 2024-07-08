@@ -1,6 +1,6 @@
 
-import { initializeApp } from "@react-native-firebase/app";
-import {getAuth} from "@react-native-firebase/auth"
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyATzJvFxVrWLeO_BLNKfWfZCOOzDJImAD4",
@@ -12,6 +12,8 @@ const firebaseConfig = {
   measurementId: "G-34GXZFDYHC"
 };
 
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export { firebase, firestore };

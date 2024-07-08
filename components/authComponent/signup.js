@@ -1,8 +1,10 @@
 import React, { useState,useEffect } from 'react';
-import { Alert ,View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
-
-const SignUpScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+import {ActivityIndicator, Alert ,View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import axios from 'axios';
+const SignUpScreen = ({route, navigation }) => {
+  const {fcmToken}= route.params;
+  
+  const [isCreatingaccount,setIsCreatingaccount] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +20,84 @@ const SignUpScreen = ({ navigation }) => {
         { cancelable: false }
     );
 };
+async function handleSignupWithnuber(){
+     // Password validation regex: at least one uppercase, one lowercase, one special character, and minimum 8 characters
+     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,}$/;
 
+
+  if (name.length < 6) {
+    Alert.alert('Invalid Username', 'Username must be at least 6 characters long.');
+    return; // Prevent form submission
+  }
+  else if (phone.length < 9) {
+    Alert.alert('Invalid Phone Number', 'Phone number must be at least 9 characters long.');
+    return; // Prevent form submission
+  }
+
+  else if (!passwordRegex.test(password)) {
+    Alert.alert(
+      'Invalid Password',
+      'Password must contain at least one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long.'
+    );
+    return; // Prevent form submission
+  }
+  else{
+    setIsCreatingaccount(true)
+    try {
+      const response = await axios.post('https://resilix.onrender.com/user/signup/', {
+        username: name,
+        password: password,
+        phone_number: phone,
+        fcmToken:fcmToken
+      });
+      console.log('Response:', response.data);
+      setIsCreatingaccount(false)
+      // Handle success, update state, etc.
+      Alert.alert(
+        'Account created succesfully',
+        'Your account has being created successfully',
+        [
+            { text: 'OK', onPress: () => {
+             navigation.navigate('Screen5',{phone:phone});
+              
+            }, }
+        ],
+        { cancelable: false }
+    );
+    } catch (error) {
+      console.log('Error:', error.message);
+      // Handle error, show alert, etc.
+      Alert.alert(
+        'Account creation unsuccesful',
+        'Your account was  not created please try again',
+        [
+            { text: 'OK' }
+        ],
+        { cancelable: false }
+    );
+      setIsCreatingaccount(false)
+    }
+  }
+}
+
+const handlePostRequest = async () => {
+  setIsCreatingaccount(true)
+  try {
+    const response = await axios.post('https://resilix.onrender.com/user/signup/', {
+      username: "brandosk70",
+      password: "@Bossman123",
+      phone_number: "+237653603453",
+      fcmToken:fcmToken
+    });
+    console.log('Response:', response.data);
+    setIsCreatingaccount(false)
+    // Handle success, update state, etc.
+  } catch (error) {
+    console.log('Error:', error.message);
+    // Handle error, show alert, etc.
+    setIsCreatingaccount(false)
+  }
+};
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -26,23 +105,19 @@ const SignUpScreen = ({ navigation }) => {
           <Text style={styles.title}>Resilix</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter Your Name"
-            value={email}
+            placeholder="Enter Your user Name"
+            value={name}
+            editable={!isCreatingaccount}
             onChangeText={setName}
               keyboardType="email-address"
           />
          
-          <TextInput
-            style={styles.input}
-            placeholder="Enter Your Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-          />
+          
           <TextInput
             style={styles.input}
             placeholder="Enter Your Phone Number"
             value={phone}
+            editable={!isCreatingaccount}
             onChangeText={setPhone}
             keyboardType="phone-pad"
           />
@@ -51,6 +126,7 @@ const SignUpScreen = ({ navigation }) => {
               style={styles.input}
               placeholder="Enter Your Password"
               value={password}
+              editable={!isCreatingaccount}
               onChangeText={setPassword}
               secureTextEntry={!passwordVisible}
             />
@@ -65,15 +141,26 @@ const SignUpScreen = ({ navigation }) => {
               />
             </TouchableOpacity>
           </View>
+          {isCreatingaccount && (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={{color:"red",fontSize:16,fontWeight:"bold"}}>Creating Your account...</Text>
+      </View>
+          )}
           <TouchableOpacity style={styles.signUpButton}
-           onPress={()=>{ navigation.navigate('Screen5');}}
+          disabled={isCreatingaccount}
+           onPress={()=>{ 
+            handleSignupWithnuber()
+          
+          }}
           >
             <Text style={styles.signUpButtonText}>Sign Up</Text>
           </TouchableOpacity>
           <Text style={styles.orText}>or continue with</Text>
           <TouchableOpacity style={styles.googleButton}
+          disabled={isCreatingaccount}
            onPress={()=>{ 
-         
+            // handlePostRequest()
           signWithGoogleButtonPress()
             }}
           >

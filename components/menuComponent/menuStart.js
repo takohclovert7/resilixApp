@@ -2,17 +2,20 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity ,Image } from 'react-native';
 
 
-const MenuCompStart = ({navigation}) => {
+const MenuCompStart = ({navigation,username, number}) => {
  
+  const getFirstTwoLetters = (str) => {
+    return str.substring(0, 2); // Extracts characters from index 0 to 1 (inclusive)
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.profile}>
-        <Text   style={styles.profileImage}>
-         SA
+        <Text   style={[styles.profileImage,{textTransform:"uppercase"}]}>
+        {getFirstTwoLetters(username)}
           </Text>
-        <Text style={styles.name}>Sandra Adams</Text>
-        <Text style={styles.email}>sandra_a88@gmail.com</Text>
+        <Text style={styles.name}>{username}</Text>
+        <Text style={styles.email}>{ number}</Text>
       </View>
       <View style={styles.menu}>
 
@@ -51,7 +54,7 @@ const MenuCompStart = ({navigation}) => {
   </TouchableOpacity>
   
   <TouchableOpacity style={styles.menuItem}    onPress={()=>{
-       navigation.navigate('sideMenu',{screenName:"communityChat"});
+       navigation.navigate('sideMenu',{screenName:"communityChat", username:getFirstTwoLetters(username)});
   }}    >
   <Image
         source={require("../../images/icons/live.png")}
@@ -62,7 +65,7 @@ const MenuCompStart = ({navigation}) => {
 
 
   <TouchableOpacity style={styles.menuItem}   onPress={()=>{
-       navigation.navigate('sideMenu',{screenName:"profileInfo"});
+       navigation.navigate('sideMenu',{screenName:"profileInfo",username,number});
   }}>
   <Image
         source={require("../../images/icons/profile.png")}
@@ -115,11 +118,12 @@ const styles = StyleSheet.create({
 
   },
   name: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
+    textTransform:"capitalize"
   },
   email: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#666',
   },
   menu: {

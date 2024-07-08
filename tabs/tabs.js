@@ -28,7 +28,7 @@ const CustomButton = ({ children, onPress, fine,keyb }) => (
   </TouchableOpacity>
 );
 
-const Sidebar = ({ isVisible, toggleSidebar,navigation }) => (
+const Sidebar = ({ isVisible, toggleSidebar,navigation ,username, number}) => (
   <Animated.View style={[styles.sidebar, { transform: [{ translateX: isVisible ? 0 :(width * -1) }] }]}>
  
  <View  style={[styles.sideTop,]}>
@@ -40,7 +40,7 @@ const Sidebar = ({ isVisible, toggleSidebar,navigation }) => (
       <Text style={styles.closeButton}>X</Text>
     </TouchableOpacity>
     </View>
-    <MenuCompOpen navigation={navigation}/>
+    <MenuCompOpen navigation={navigation}  username={username}   number={number}/>
 
 </Animated.View>
 );
@@ -69,6 +69,8 @@ const CustomHeader = ({ toggleSidebar }) => (
 );
 
 const Tabs = ({ navigation}) => {
+  const username="junior"
+  const number="+2367994243"
   const [isFineScreen, setIsFineScreen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -213,6 +215,7 @@ const Tabs = ({ navigation}) => {
                     tintColor: focused ? "#0071CE" : "black"
                   }}
                 />
+                   <Icon name="Home" type="ionicon" size={30} color="green" />
               </View>
             ),
           }}
@@ -258,7 +261,8 @@ const Tabs = ({ navigation}) => {
 />
 
       </Tab.Navigator>
-      <Sidebar isVisible={isSidebarVisible} toggleSidebar={toggleSidebar}  navigation={navigation}/>
+      <Sidebar isVisible={isSidebarVisible} toggleSidebar={toggleSidebar}  
+      navigation={navigation} username={username}  number={number}/>
     </>
 
   );

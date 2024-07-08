@@ -1,24 +1,45 @@
 import React, { useState,useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView,ActivityIndicator } from 'react-native';
 import ForcastScreen from './forcast';
-
+import axios from 'axios';
 const HomeFirstScreen = ({ navigation}) => {
 
-
+    const [data, setData] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [bold, setBold] = React.useState("");
-    const emergency = [
-        { boldText: "Flood Alert", lightText: "Report any flood concern in your area", boxColor: "red" },
-        { boldText: "Medical emergency", lightText: "Need urgent medical help? Report here", boxColor: "red" },
-        { boldText: "Report Fire", lightText: "Notify the fire Brigade", boxColor: "orange" },
-        { boldText: "Ambulance", lightText: "Book an ambulance", boxColor: "blue" },
-    ];
+    const firstFourEmergency = data && data.length > 0 ? data.slice(0, 4) : "";
 
-    useFocusEffect(() => {
-        // Run any side effect code here that you want to execute when the screen gains focus
-        // This will run each time the screen gains focus
-        // For example, you can reload data or reinitialize state here
-    });
+    function createRandomNumberGenerator() {
+        let lastIndex = -1; // Initialize with -1 to start with a different number at first call
+    
+        return function() {
+            lastIndex = (lastIndex + 1) % 3; // Increment and wrap around from 0 to 3
+            return lastIndex;
+        };
+    }
+    // Create an instance of the generator
+const generateRandomNumber = createRandomNumberGenerator();
+const color=["red","blue","orange"]
+function ensureEmergence(text) {
+    // Convert the text to lowercase for case-insensitive comparison
+    const lowerCaseText = text.toLowerCase();
+    const word = "emergency";
+    if (lowerCaseText.includes(word)) {
+      return text;
+    } else {
+      return text + " " + word;
+    }
+  }
+  function removeEmergence(text) {
+    const regex = /emergency/i;
+    if (regex.test(text)) {
+      return text.replace(regex, '').trim();
+    } else {
+      return text;
+    }
+  }
+
 
 function  handleFlood(){
     navigation.navigate('Screen5');
@@ -28,8 +49,22 @@ function  handleFlood(){
     navigation.navigate('Screen6');
  }
 
+ const getAlertChoices = async () => {
+    setLoading(false)
+ try {
+    const response = await axios.get('https://resilix.onrender.com/emergency/choices');
+    setData(response.data);
+setLoading(true)
+ } catch (error) {
+    console.log(error)
+    setLoading(false)
+ }
+  };
 
-
+  useEffect(()=>{
+    getAlertChoices()
+   
+  },[])
 
     return (
         <ScrollView contentContainerStyle={styles.container} style={{marginBottom:100}}>
@@ -50,35 +85,46 @@ function  handleFlood(){
             </View>
             <View style={styles.emergencyContainer}>
                 <Text style={styles.title}>Select Your Emergency</Text>
-                {emergency.map((item, index) => (
-                    <TouchableOpacity key={index} onPress={() => {
+
+     {data.length === 0 ? (
+       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+       <ActivityIndicator size="large" color="#0000ff" />
+       <Text>Fetching emegency types...</Text>
+     </View>
+      ) : (
+        
+        firstFourEmergency.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => {
                      
-                        setBold(item.boldText);
-                        navigation.navigate('Screen2', { boldT:item.boldText});
-                       
-                    }}>
-                        <View style={[styles.emergencyView, { backgroundColor: "rgba(0, 113, 206, 0.15)" }]}>
-                            <View style={[styles.iconView, { backgroundColor: item.boxColor }]}>
-                                <Image
-                                    source={require("../../images/icons/Police.png")}
-                                    resizeMode="contain"
-                                    style={{ width: 19, height: 19, tintColor: "white" }}
-                                />
-                            </View>
-                            <View style={styles.textView}>
-                                <Text style={styles.boldText}>{item.boldText}</Text>
-                                <Text style={{ color: "#444E72" }}>{item.lightText}</Text>
-                            </View>
-                            <View style={[styles.arrowView, { backgroundColor: "rgb(0,113,206)" }]}>
-                                <Image
-                                    source={require("../../images/icons/Right.png")}
-                                    resizeMode="contain"
-                                    style={{ width: 13, height: 15, tintColor: "white" }}
-                                />
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                ))}
+                setBold(item.boldText);
+                navigation.navigate('Screen2', { boldT:item.emergency_name,index:item.id});
+               
+            }}>
+                <View style={[styles.emergencyView, { backgroundColor: "rgba(0, 113, 206, 0.15)" }]}>
+                    <View style={[styles.iconView, { backgroundColor:color[generateRandomNumber()]}]}>
+                        <Image
+                            source={require("../../images/icons/Police.png")}
+                            resizeMode="contain"
+                            style={{ width: 19, height: 19, tintColor: "white" }}
+                        />
+                    </View>
+                    <View style={styles.textView}>
+                        <Text style={styles.boldText}>{ensureEmergence(item.emergency_name)}</Text>
+                        <Text style={{ color: "#444E72" }}>Report situations related to {removeEmergence(item.emergency_name)}</Text>
+                    </View>
+                    <View style={[styles.arrowView, { backgroundColor: "rgb(0,113,206)" }]}>
+                        <Image
+                            source={require("../../images/icons/Right.png")}
+                            resizeMode="contain"
+                            style={{ width: 13, height: 15, tintColor: "white" }}
+                        />
+                    </View>
+                </View>
+            </TouchableOpacity>
+        ))
+            )}
+
+                
             </View>
             <View style={styles.aiAssistantContainer}>
                 <TouchableOpacity >
@@ -148,6 +194,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 17,
         color: "#444E72",
+        textTransform:"capitalize"
     },
     arrowView: {
         width: 21,

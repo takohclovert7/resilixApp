@@ -1,7 +1,47 @@
-import React from 'react';
+import React ,{useEffect}from 'react';
 import { StyleSheet, Text, Keyboard, ScrollView, View, Image, TouchableOpacity, SafeAreaView, TextInput, StatusBar, TouchableWithoutFeedback, Alert } from 'react-native';
-
+import axios from 'axios';
 const HomeThreeScreen = ({route,navigation}) => {
+
+  async function sendPostRequest() {
+    const url = 'https://resilix.onrender.com/chatbot/';
+    const data = {
+       message: "What should I do during a flood ?"
+    };
+  
+    try {
+        const response = await axios.post(url, data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+  
+        console.log('Success:', response.data);
+  
+    } catch (error) {
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log('Server error:', error.response.data);
+            console.log('Status code:', error.response.status);
+            // console.log('Headers:', error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser
+            // and an instance of http.ClientRequest in node.js
+            console.log('Network error:', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error:', error.message);
+        }
+    }
+  }
+  
+
+useEffect(()=>{
+  sendPostRequest()
+},[])
+
   const {addressName,boldText,emegencyDreciption} = route.params;
   return (
     <ScrollView style={{ backgroundColor: "#fff7ee", height: "100%", marginBottom:90}}>
