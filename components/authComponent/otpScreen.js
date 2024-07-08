@@ -72,14 +72,26 @@ const OtpVerification = ({route, navigation }) => {
   const handleOtpRequest = async () => {
     setIsCreatingaccount(true)
     try {
-      console.log({phone,otp:otp.join("")})
+      // console.log(typeof(phone))
       const response = await axios.post('https://resilix.onrender.com/verify_phone/', {
-      phone_number : phone,
+      phone_number:"+237653603453",
        otp_code :otp.join("")
       });
       console.log('Response:', response.data);
       setIsCreatingaccount(false)
       // Handle success, update state, etc.
+      Alert.alert(
+        'OTP verification successfully!',
+        'You can now log in',
+        [
+            { text: 'OK', onPress: () => {
+              navigation.navigate('Screen1');
+              
+            }, }
+        ],
+        { cancelable: false }
+    );
+      
     } catch (error) {
       console.log('Error:', error.message);
       // Handle error, show alert, etc.

@@ -26,10 +26,11 @@ const [isLogging,setIsLoggin]=useState(false)
 
 
 async function sendPostRequest() {
+  setIsLoggin(true)
   const url = 'https://resilix.onrender.com/login/';
   const data = {
-    username:"Brandoski30" ,
-     password:"@Bossman123"
+    username:email ,
+     password:password
   };
 
   try {
@@ -40,18 +41,14 @@ async function sendPostRequest() {
       });
 
       console.log('Success:', response.data);
-
+      navigation.navigate('Screen4',{user:response.data});
+      setIsLoggin(false)
   } catch (error) {
+    setIsLoggin(false)
       if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          // console.log('Server error:', error.response.text);
           console.log('Status code:', error.response.status);
           console.log('Headers:', error.response.headers);
       } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser
-          // and an instance of http.ClientRequest in node.js
           console.log('Network error:', error.request);
       } else {
           // Something happened in setting up the request that triggered an Error
@@ -61,7 +58,7 @@ async function sendPostRequest() {
 }
 
 useEffect(()=>{
-  sendPostRequest();
+ 
 })
 
 
@@ -75,10 +72,10 @@ useEffect(()=>{
           />
         </View>
         <View style={styles.formContainer}>
-        <Text style={{fontWeight:"bold",color:"black",marginBottom:4,marginLeft:7}}>Email</Text>
+        <Text style={{fontWeight:"bold",color:"black",marginBottom:4,marginLeft:7}}>User Name</Text>
           <TextInput
             style={styles.input}
-            placeholder="example@gmail.com"
+            placeholder="user name"
             value={email}
             editable={!isLogging}
             onChangeText={setEmail}
@@ -127,7 +124,7 @@ useEffect(()=>{
           )}
           <TouchableOpacity style={styles.loginButton}
           disabled={isLogging}
-          onPress={()=>{ navigation.navigate('Screen4');}}
+          onPress={()=>{ sendPostRequest();}}
           >
             <Text style={styles.loginButtonText}>Log In</Text>
           </TouchableOpacity>

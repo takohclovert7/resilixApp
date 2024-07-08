@@ -215,7 +215,7 @@ const Tabs = ({ navigation}) => {
                     tintColor: focused ? "#0071CE" : "black"
                   }}
                 />
-                   <Icon name="Home" type="ionicon" size={30} color="green" />
+                 
               </View>
             ),
           }}
