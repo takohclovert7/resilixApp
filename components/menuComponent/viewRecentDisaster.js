@@ -32,7 +32,24 @@ const disasterData = [
 ];
 
 const ViewRecentDisasters = ({location,navigation}) => {
-  
+
+  const getAlertChoices = async () => {
+    // setLoading(false)
+ try {
+    const response = await axios.get('https://resilixapi.onrender.com/alerts');
+    console.log({alert:response.data})
+    // setData(response.data);
+// setLoading(true)
+ } catch (error) {
+    console.log(error)
+    // setLoading(false)
+ }
+  };
+
+useEffect(()=>{
+  getAlertChoices()
+},[])
+
     const [isOnline, setIsOnline] = useState(true);
     useEffect(() => {
       const unsubscribe = NetInfo.addEventListener(state => {

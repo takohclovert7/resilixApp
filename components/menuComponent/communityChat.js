@@ -33,7 +33,7 @@ export default  function CommunityChat  ({username}){
       keyboardVerticalOffset={90}
     >
         <CommunityChatHeader  username={username}/>
-        <CommunityChatBottom  groupId={"resilix-group-id"} currentUser={{ _id: '1', name: `${username}` }} />
+        <CommunityChatBottom  groupId={"resilix-group-id"} currentUser={{ _id: `${username}`, name: `${username}` }} />
 
       
     </KeyboardAvoidingView>

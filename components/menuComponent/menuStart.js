@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity ,Image } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MenuCompStart = ({navigation,username, number}) => {
  
@@ -54,7 +54,7 @@ const MenuCompStart = ({navigation,username, number}) => {
   </TouchableOpacity>
   
   <TouchableOpacity style={styles.menuItem}    onPress={()=>{
-       navigation.navigate('sideMenu',{screenName:"communityChat", username:getFirstTwoLetters(username)});
+       navigation.navigate('sideMenu',{screenName:"communityChat", username:username});
   }}    >
   <Image
         source={require("../../images/icons/live.png")}
@@ -74,8 +74,14 @@ const MenuCompStart = ({navigation,username, number}) => {
     <Text style={styles.menuText}>Change profile info</Text>
   </TouchableOpacity>
 
-  <TouchableOpacity style={styles.menuItem}  onPress={()=>{
-       navigation.navigate('Screen1');
+  <TouchableOpacity style={styles.menuItem}  onPress={async()=>{
+    
+       try {
+        await AsyncStorage.setItem("@resilixUser", " ");
+        navigation.navigate('Screen1');
+      } catch (error) {
+        console.error('Error storing data:', error);
+      }
   }}  >
     
   <Image

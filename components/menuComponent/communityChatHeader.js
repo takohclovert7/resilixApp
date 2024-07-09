@@ -6,13 +6,15 @@ import axios from 'axios';
 
 
 export default  function CommunityChatHeader  ({username}){
-
+    const getFirstTwoLetters = (str) => {
+        return str.substring(0, 2); // Extracts characters from index 0 to 1 (inclusive)
+      };
     return(
         <View>
             <View style={styles.communityView}> 
                 <Text style={styles.communityText}>Community chat</Text>
                 <Text   style={[styles.profileImage,{textTransform:"uppercase",fontWeight:"bold"}]}>
-       {username}
+       {getFirstTwoLetters(username)}
           </Text>
             </View>
             <Text style={styles.discusedText}>Discuss with other people in your community</Text>

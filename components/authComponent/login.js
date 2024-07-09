@@ -46,7 +46,7 @@ async function sendPostRequest() {
 // local storage
 try {
   const jsonValue = JSON.stringify(response.data);
-  await AsyncStorage.setItem('@user', jsonValue);
+  await AsyncStorage.setItem('@resilixUser', jsonValue);
   console.log('Data successfully saved');
 } catch (e) {
   console.log('Failed to save the data to the storage');
@@ -76,9 +76,6 @@ try {
   }
 }
 
-useEffect(()=>{
- 
-})
 
 
   return (
@@ -143,7 +140,9 @@ useEffect(()=>{
           )}
           <TouchableOpacity style={styles.loginButton}
           disabled={isLogging}
-          onPress={()=>{ sendPostRequest();}}
+          onPress={()=>{ 
+            
+            sendPostRequest();}}
           >
             <Text style={styles.loginButtonText}>Log In</Text>
           </TouchableOpacity>

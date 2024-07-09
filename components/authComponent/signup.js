@@ -58,7 +58,7 @@ async function handleSignupWithnuber(){
         'Your account has being created successfully',
         [
             { text: 'OK', onPress: () => {
-             navigation.navigate('Screen5',{phone:phone});
+             navigation.navigate('Screen1',{phone:phone});
               
             }, }
         ],

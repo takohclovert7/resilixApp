@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ActivityIndicator,StyleSheet, ScrollView, Text, Keyboard, View, Image, TouchableOpacity, SafeAreaView, TextInput, StatusBar, TouchableWithoutFeedback, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { initializeNotifee } from "../../PushNotificationConfig";
 
 function HomeSecond({handleSendAlert,boldText,location,id}){
 const [addressName,setAddresName]=useState(null)
@@ -10,7 +10,7 @@ const [inputValue, setInputValue] = useState('');
 const [isLoading, setIsLoading] = useState(true);
 const [reload ,setReload]=useState(false)
 const [err, setErr]=useState(false)
-
+const [isCreatingAlert ,setIsCreatingAlert]=useState(false)
   const getHumanReadableAddress = async (latitude, longitude) => {
     setErr(false)
     setIsLoading(true)
@@ -35,9 +35,25 @@ const [err, setErr]=useState(false)
       Alert.alert('Input field Required', 'Provide a description of the emegency you are currently facing .');
     } else {
       // Handle the valid input
+      setIsCreatingAlert(true)
       sendPostRequest()
-      handleSendAlert(addressName,inputValue)
-     
+      // handleSendAlert(addressName,inputValue)
+      setTimeout(() => {
+        setIsCreatingAlert(false)
+        Alert.alert(
+          'Alert creation!',
+          'Your Alert was created and send successfully',
+          [
+              { text: 'OK', onPress: () => {
+                initializeNotifee(inputValue,boldText)
+                handleSendAlert(addressName,inputValue)
+                
+              }, }
+          ],
+          { cancelable: false }
+      );
+      }, 3000); // 2000 milliseconds = 2 seconds
+      
     }
   };
   
@@ -55,23 +71,23 @@ const [err, setErr]=useState(false)
 
  
 async function sendPostRequest() {
-  const jsonValue = await AsyncStorage.getItem('@user');
+  const jsonValue = await AsyncStorage.getItem('@resilixUser');
   jsonValue != null ? JSON.parse(jsonValue) : null;
 
   const url = 'https://resilixapi.onrender.com/alerts/';
   const data = {
-      alert_type: 1,
+      alert_type: id,
       user_location: {
-          longitude:10.1234,
-          latitude:20.5678
+          longitude:location.coords.longitude,
+          latitude:location.coords.latitude
       },
-      description: 'There is a flood in my area.',
+      description: inputValue,
       broadcast_to_all:true
   };
 
   try {
    
-console.log(jsonValue);
+console.log(data);
       const response = await axios.post(url, data, {
           headers: {
               'Content-Type': 'application/json',
@@ -84,13 +100,13 @@ console.log(jsonValue);
   } catch (error) {
       if (error.response) {
           // console.log('Server error:', error.response.text);
-          console.log('Status code:', error.response.status);
-          console.log('Headers:', error.response.headers);
+          console.log('Status code 1:', error.response.status);
+          console.log('Headers 1:', error.response.headers);
       } else if (error.request) {
-          console.log('Network error:', error.request);
+          console.log('Network error 1:', error.request);
       } else {
           // Something happened in setting up the request that triggered an Error
-          console.log('Error:', error.message);
+          console.log('Error 1:', error.message);
       }
   }
 }
@@ -162,6 +178,7 @@ if (err) {
                 placeholder="Type your message here (optional)"
                 multiline={true}
                 numberOfLines={5}
+                editable={!isCreatingAlert}
                 value={inputValue}
                 onChangeText={handleInputChange}
         
@@ -171,11 +188,19 @@ if (err) {
                 style={styles.image}
               />
             </View>
+            {isCreatingAlert && (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={{color:"red",fontSize:16,fontWeight:"bold"}}>Sending Alert...</Text>
+      </View>
+          )}
           </View>
         </SafeAreaView>
-
+       
         <View style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <TouchableOpacity style={{
+          <TouchableOpacity 
+          disabled={isCreatingAlert}
+          style={{
             backgroundColor: "red",
             width: 130,
             height: 40,
